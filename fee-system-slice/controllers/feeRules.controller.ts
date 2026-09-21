@@ -42,3 +42,17 @@ export async function listFeeRules(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to fetch fee rules' });
   }
 }
+
+export async function deleteFeeRule(req: Request, res: Response) {
+  try {
+    const assignmentsUsingIt = await prisma.feeAssignment.count({ where: { feeRuleId: req.params.id } });
+    if (assignmentsUsingIt > 0) {
+      return res.status(409).json({ error: `Cannot delete: ${assignmentsUsingIt} student(s) are assigned this fee` });
+    }
+    await prisma.feeRule.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  } catch (err) {
+    console.error('Failed to delete fee rule:', err);
+    res.status(500).json({ error: 'Failed to delete fee rule' });
+  }
+}

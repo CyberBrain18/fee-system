@@ -23,3 +23,17 @@ export async function listFeeComponents(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to fetch fee components' });
   }
 }
+
+export async function deleteFeeComponent(req: Request, res: Response) {
+  try {
+    const rulesUsingIt = await prisma.feeRule.count({ where: { feeComponentId: req.params.id } });
+    if (rulesUsingIt > 0) {
+      return res.status(409).json({ error: `Cannot delete: ${rulesUsingIt} fee rule(s) still use this component` });
+    }
+    await prisma.feeComponent.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  } catch (err) {
+    console.error('Failed to delete fee component:', err);
+    res.status(500).json({ error: 'Failed to delete fee component' });
+  }
+}

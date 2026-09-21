@@ -73,3 +73,17 @@ export async function chargeLateFee(req: Request, res: Response) {
         res.status(500).json({ error: 'Failed to charge late fee' });
     }
 }
+
+export async function deleteInstallment(req: Request, res: Response) {
+  try {
+    const transactionsUsingIt = await prisma.transaction.count({ where: { installmentId: req.params.id } });
+    if (transactionsUsingIt > 0) {
+      return res.status(409).json({ error: `Cannot delete: ${transactionsUsingIt} transaction(s) are recorded against this installment` });
+    }
+    await prisma.installment.delete({ where: { id: req.params.id } });
+    res.status(204).send();
+  } catch (err) {
+    console.error('Failed to delete installment:', err);
+    res.status(500).json({ error: 'Failed to delete installment' });
+  }
+}

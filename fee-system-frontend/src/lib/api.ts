@@ -15,6 +15,7 @@ export async function request(path: string, options?: RequestInit) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed: ${res.status}`);
   }
+  if (res.status === 204) return null;
   return res.json();
 }
 
@@ -114,4 +115,16 @@ export function withdrawStudent(id: string) {
 
 export function getWithdrawnStudents() {
   return request('/students/withdrawn');
+}
+
+export function deleteFeeComponent(id: string) {
+  return request(`/fee-components/${id}`, { method: 'DELETE' });
+}
+
+export function deleteFeeRule(id: string) {
+  return request(`/fee-rules/${id}`, { method: 'DELETE' });
+}
+
+export function deleteInstallment(id: string) {
+  return request(`/installments/${id}`, { method: 'DELETE' });
 }

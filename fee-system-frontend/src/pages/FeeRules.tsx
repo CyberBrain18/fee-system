@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getFeeRules, getFeeComponents } from '../lib/api';
+import { getFeeRules, getFeeComponents, deleteFeeComponent, deleteFeeRule } from '../lib/api';
 import Sidebar from '../components/Sidebar';
+import { getRole } from '../lib/auth';
 
 
 function FeeRules() {
@@ -9,6 +10,13 @@ function FeeRules() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [components, setComponents] = useState<any[]>([]);
+
+  const isAdmin = getRole() === 'ADMIN';
+
+  function refetch() {
+    getFeeRules().then(setRules).catch((err) => setError(err.message));
+    getFeeComponents().then(setComponents).catch(() => {});
+  }
 
   useEffect(() => {
     getFeeRules()
@@ -60,9 +68,26 @@ function FeeRules() {
             {components.map((c) => (
               <span
                 key={c.id}
-                className="px-3 py-1.5 rounded-full bg-black/5 text-[13px] font-medium"
+                className="px-3 py-1.5 rounded-full bg-black/5 text-[13px] font-medium flex items-center gap-2"
               >
                 {c.name} — {c.calculationType.replace('_', ' ').toLowerCase()}
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await deleteFeeComponent(c.id);
+                        refetch();
+                      } catch (err: any) {
+                        alert(err.message);
+                      }
+                    }}
+                    className="text-[#B3261E] bg-transparent border-none cursor-pointer text-xs font-bold"
+                    aria-label={`Delete ${c.name}`}
+                  >
+                    ✕
+                  </button>
+                )}
               </span>
             ))}
           </div>
@@ -78,6 +103,7 @@ function FeeRules() {
                 <th className="px-6 py-3 font-medium">Amount</th>
                 <th className="px-6 py-3 font-medium">Rate/km</th>
                 <th className="px-6 py-3 font-medium">Late Fee</th>
+                <th className="px-6 py-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -91,6 +117,25 @@ function FeeRules() {
                     {rule.ratePerKm != null ? `₹${rule.ratePerKm}` : '—'}
                   </td>
                   <td className="px-6 py-3 font-mono">{rule.lateFeePercent}%</td>
+                  <td className="px-6 py-3 text-right">
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!confirm(`Delete this ${rule.feeComponent.name} rule?`)) return;
+                          try {
+                            await deleteFeeRule(rule.id);
+                            refetch();
+                          } catch (err: any) {
+                            alert(err.message);
+                          }
+                        }}
+                        className="text-[#B3261E] text-[13px] font-semibold bg-transparent border-none cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
