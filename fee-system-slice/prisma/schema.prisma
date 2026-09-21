@@ -18,13 +18,14 @@ model User {
 }
 
 model Student {
-  id          String           @id @default(uuid())
-  name        String
-  grade       String
-  section     String           @default("A")
-  distanceKm  Float?
-  isBoarder   Boolean          @default(false)
-  assignments FeeAssignment[]
+  id           String           @id @default(uuid())
+  name         String
+  grade        String
+  section      String           @default("A")
+  distanceKm   Float?
+  isBoarder    Boolean          @default(false)
+  withdrawnAt  DateTime?
+  assignments  FeeAssignment[]
 }
 
 model FeeRule {

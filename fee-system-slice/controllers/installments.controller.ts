@@ -22,7 +22,7 @@ export async function createInstallment(req: Request, res: Response) {
 export async function listInstallmentsForAssignment(req: Request, res: Response) {
     try {
         const installments = await prisma.installment.findMany({
-            where: { feeAssignmentId: req.params.id },
+            where: { feeAssignmentId: (req.params.id as string) },
             include: { transactions: true },
             orderBy: { installmentNumber: 'asc'}
         });
@@ -45,7 +45,7 @@ export async function listInstallmentsForAssignment(req: Request, res: Response)
 export async function chargeLateFee(req: Request, res: Response) {
     try {
         const installment = await prisma.installment.findUnique({
-            where: { id: req.params.id },
+            where: { id: (req.params.id as string) },
             include: { transactions: true, feeAssignment: { include: { feeRule: true } } }
         });
         if (!installment) {

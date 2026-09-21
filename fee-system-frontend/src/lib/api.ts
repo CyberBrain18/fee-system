@@ -2,7 +2,7 @@ import { getToken } from './auth';
 
 const BASE_URL = 'http://localhost:3000';
 
-async function request(path: string, options?: RequestInit) {
+export async function request(path: string, options?: RequestInit) {
   const token = getToken();
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: {
@@ -94,3 +94,24 @@ export function createFeeRule(data: {
   });
 }
 
+export function assignFee(data: {
+  studentId: string;
+  feeRuleId: string;
+  academicYear: string;
+  installmentCount?: number;
+  firstDueDate?: string;
+  monthsBetween?: number;
+}) {
+  return request('/fee-assignments', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export function withdrawStudent(id: string) {
+  return request(`/students/${id}/withdraw`, { method: 'POST' });
+}
+
+export function getWithdrawnStudents() {
+  return request('/students/withdrawn');
+}

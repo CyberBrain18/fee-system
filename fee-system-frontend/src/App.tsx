@@ -9,6 +9,9 @@ import NoDuesCheck from './pages/NoDuesCheck'
 import CreateStudent from './pages/CreateStudent'
 import FeeComponentForm from './pages/FeeComponentForm'
 import FeeRuleForm from './pages/FeeRuleForm'
+import AssignFee from './pages/AssignFees'
+import BulkCreateStudents from './pages/BulkCreateStudents'
+import WithdrawnStudents from './pages/WithdrawnStudents'
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
       <Route path="/students/new" element={<RequireAuth><CreateStudent /></RequireAuth>} />
       <Route path="/fee-components/new" element={<RequireAuth><FeeComponentForm /></RequireAuth>} />
       <Route path="/fee-rules/new" element={<RequireAuth><FeeRuleForm /></RequireAuth>} />
+      <Route path="/students/:id/assign-fee" element={<RequireAuth><AssignFee /></RequireAuth>} />
+      <Route path="/students/bulk-import" element={<RequireAuth><BulkCreateStudents /></RequireAuth>} />
+      <Route path="/students/withdrawn" element={<RequireAuth><WithdrawnStudents /></RequireAuth>} />
     </Routes>
   )
 }

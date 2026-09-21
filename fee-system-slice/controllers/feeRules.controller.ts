@@ -20,7 +20,7 @@ export async function updateFeeRule(req: Request, res: Response) {
     const { lateFeePercent } = req.body;
     try {
         const rule = await prisma.feeRule.update({
-            where: { id: req.params.id },
+            where: { id: (req.params.id as string) },
             data: { lateFeePercent }
         });
         res.json(rule);

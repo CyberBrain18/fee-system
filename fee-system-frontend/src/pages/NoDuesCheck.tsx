@@ -5,7 +5,6 @@ import Avatar from '../components/Avatar';
 
 function NoDuesCheck() {
   const [query, setQuery] = useState('');
-  const [students, setStudents] = useState<any[]>([]);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 

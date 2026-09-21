@@ -56,12 +56,17 @@ function Dashboard() {
       <main className="flex-1 p-10 flex flex-col gap-7">
         <div className="flex justify-between items-center">
           <h1 className="font-display font-semibold text-[28px] m-0">Fee Collection — 2026</h1>
-          <Link
-            to="/students/new"
-            className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
-          >
-            + New Student
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to="/students/new"
+              className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
+            >
+              + New Student
+            </Link>
+            <Link to="/students/bulk-import" className="px-4.5 py-2.5 rounded-lg border border-black/15 text-sm font-semibold text-[#141413] no-underline">
+              Bulk Import
+            </Link>
+          </div>
         </div>
         <div className="grid grid-cols-4 gap-5">
           <div className="bg-white border border-black/10 rounded-xl p-5">
