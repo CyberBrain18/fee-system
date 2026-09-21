@@ -42,7 +42,7 @@ function FeeRules() {
             className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
           >
             Log Out
-        </button>
+          </button>
         </nav>
       </aside>
 
@@ -53,12 +53,20 @@ function FeeRules() {
               <h1 className="font-display font-semibold text-[28px] m-0">Fee Rules</h1>
               <div className="text-sm text-[#73726C] mt-1">What each fee costs, per academic year</div>
             </div>
-            <Link
-              to="/fee-components/new"
-              className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
-            >
-              + New Fee Component
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                to="/fee-components/new"
+                className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
+              >
+                + New Fee Component
+              </Link>
+              <Link
+                to="/fee-rules/new"
+                className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
+              >
+                + New Fee Rule
+              </Link>
+            </div>
           </div>
         </div>
 

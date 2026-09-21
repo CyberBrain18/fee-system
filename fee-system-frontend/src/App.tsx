@@ -8,6 +8,7 @@ import RequireAuth from './RequireAuth'
 import NoDuesCheck from './NoDuesCheck'
 import CreateStudent from './CreateStudent'
 import FeeComponentForm from './FeeComponentForm'
+import FeeRuleForm from './FeeRulesForm'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/no-dues" element={<RequireAuth><NoDuesCheck /></RequireAuth>} />
       <Route path="/students/new" element={<RequireAuth><CreateStudent /></RequireAuth>} />
       <Route path="/fee-components/new" element={<RequireAuth><FeeComponentForm /></RequireAuth>} />
+      <Route path="/fee-rules/new" element={<RequireAuth><FeeRuleForm /></RequireAuth>} />
     </Routes>
   )
 }
