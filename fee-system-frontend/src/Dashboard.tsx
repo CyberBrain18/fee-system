@@ -73,6 +73,7 @@ function Dashboard() {
         <nav className="flex flex-col gap-1">
           <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Dashboard</div>
           <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
+          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
           <button
           type="button"
           onClick={handleLogout}
@@ -80,12 +81,20 @@ function Dashboard() {
         >
           Log Out
         </button>
+        
         </nav>
       </aside>
 
       <main className="flex-1 p-10 flex flex-col gap-7">
-        <h1 className="font-display font-semibold text-[28px]">Fee Collection — 2026</h1>
-
+        <div className="flex justify-between items-center">
+          <h1 className="font-display font-semibold text-[28px] m-0">Fee Collection — 2026</h1>
+          <Link
+            to="/students/new"
+            className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
+          >
+            + New Student
+          </Link>
+        </div>
         <div className="grid grid-cols-4 gap-5">
           <div className="bg-white border border-black/10 rounded-xl p-5">
             <div className="text-[13px] text-[#73726C]">Total Collected</div>

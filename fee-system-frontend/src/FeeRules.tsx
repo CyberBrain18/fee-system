@@ -35,6 +35,7 @@ function FeeRules() {
         <nav className="flex flex-col gap-1">
           <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Dashboard</Link>
           <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Fee Rules</div>
+          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
           <button
             type="button"
             onClick={handleLogout}
@@ -47,8 +48,18 @@ function FeeRules() {
 
       <main className="flex-1 p-10 flex flex-col gap-6">
         <div>
-          <h1 className="font-display font-semibold text-[28px] m-0">Fee Rules</h1>
-          <div className="text-sm text-[#73726C] mt-1">What each fee costs, per academic year</div>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="font-display font-semibold text-[28px] m-0">Fee Rules</h1>
+              <div className="text-sm text-[#73726C] mt-1">What each fee costs, per academic year</div>
+            </div>
+            <Link
+              to="/fee-components/new"
+              className="px-4.5 py-2.5 rounded-lg border-none bg-[#2A78D6] text-white text-sm font-semibold no-underline"
+            >
+              + New Fee Component
+            </Link>
+          </div>
         </div>
 
         <div className="bg-white border border-black/10 rounded-xl overflow-hidden">

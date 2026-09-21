@@ -52,3 +52,45 @@ export function getFeeRules() {
   return request('/fee-rules');
 }
 
+export function getNoDuesStatus(studentId: string) {
+  return request(`/students/${studentId}/no-dues`);
+}
+
+export function createStudent(data: {
+  name: string;
+  grade: string;
+  section: string;
+  distanceKm?: number;
+  isBoarder?: boolean;
+}) {
+  return request('/students', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export function getFeeComponents() {
+  return request('/fee-components');
+}
+
+export function createFeeComponent(data: { name: string; calculationType: string }) {
+  return request('/fee-components', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export function createFeeRule(data: {
+  feeComponentId: string;
+  grade?: string;
+  academicYear: string;
+  amount: number;
+  ratePerKm?: number;
+  lateFeePercent?: number;
+}) {
+  return request('/fee-rules', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+

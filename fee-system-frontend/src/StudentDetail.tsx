@@ -76,6 +76,7 @@ function StudentDetail() {
         <nav className="flex flex-col gap-1">
           <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6] no-underline">Dashboard</Link>
           <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
+          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
           <button
           type="button"
           onClick={handleLogout}
