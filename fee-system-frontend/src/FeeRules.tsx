@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getFeeRules } from './api';
+import { useNavigate } from 'react-router-dom';
+import { clearToken } from './auth';
 
 function FeeRules() {
   const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    clearToken();
+    navigate('/login');
+  }
 
   useEffect(() => {
     getFeeRules()
@@ -27,6 +35,13 @@ function FeeRules() {
         <nav className="flex flex-col gap-1">
           <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Dashboard</Link>
           <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Fee Rules</div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
+          >
+            Log Out
+        </button>
         </nav>
       </aside>
 

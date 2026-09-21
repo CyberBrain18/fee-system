@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getStudents } from './api';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { clearToken } from './auth';
 
 function computeAssignmentTotals(assignment: any) {
+
   let balance = assignment.amount;
   let paid = 0;
   for (const t of assignment.transactions) {
@@ -26,9 +29,14 @@ function initials(name: string) {
 }
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  function handleLogout() {
+    clearToken();
+    navigate('/login');
+  }
 
   useEffect(() => {
     getStudents()
@@ -65,6 +73,13 @@ function Dashboard() {
         <nav className="flex flex-col gap-1">
           <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Dashboard</div>
           <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
+          <button
+          type="button"
+          onClick={handleLogout}
+          className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
+        >
+          Log Out
+        </button>
         </nav>
       </aside>
 

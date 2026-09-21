@@ -1,8 +1,14 @@
+import { getToken } from './auth';
+
 const BASE_URL = 'http://localhost:3000';
 
 async function request(path: string, options?: RequestInit) {
+  const token = getToken();
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
   });
   if (!res.ok) {
@@ -10,6 +16,13 @@ async function request(path: string, options?: RequestInit) {
     throw new Error(body.error || `Request failed: ${res.status}`);
   }
   return res.json();
+}
+
+export function login(email: string, password: string) {
+  return request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
 }
 
 export function getStudents() {
@@ -38,3 +51,4 @@ export function recordPayment(data: { feeAssignmentId: string; installmentId?: s
 export function getFeeRules() {
   return request('/fee-rules');
 }
+

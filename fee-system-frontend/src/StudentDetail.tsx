@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getStudent } from './api';
+import { useNavigate } from 'react-router-dom';
+import { clearToken } from './auth';
 
 function computeInstallmentTotals(installment: any) {
+
   let balance = installment.amount;
   let paid = 0;
   let lateFee = 0;
@@ -41,7 +44,12 @@ function StudentDetail() {
   const [student, setStudent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  function handleLogout() {
+    clearToken();
+    navigate('/login');
+  }
   useEffect(() => {
     if (!id) return;
     getStudent(id)
@@ -68,6 +76,13 @@ function StudentDetail() {
         <nav className="flex flex-col gap-1">
           <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6] no-underline">Dashboard</Link>
           <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
+          <button
+          type="button"
+          onClick={handleLogout}
+          className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
+        >
+          Log Out
+        </button>
         </nav>
       </aside>
 

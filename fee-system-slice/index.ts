@@ -1,8 +1,10 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from './prisma/generated/prisma/client.ts';
 import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 import cors from 'cors';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({adapter});
@@ -11,7 +13,63 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.post('/fee-rules', async (req: Request, res: Response) => {
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid authorization header' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    (req as any).user = payload;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+app.post('/auth/signup', async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { name, email, passwordHash }
+    });
+    res.status(201).json({ id: user.id, name: user.name, email: user.email });
+  } catch (err) {
+    console.error('Signup failed:', err);
+    res.status(500).json({ error: 'Failed to create account' });
+  }
+});
+
+app.post('/auth/login', async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '8h' }
+    );
+
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+  } catch (err) {
+    console.error('Login failed:', err);
+    res.status(500).json({ error: 'Failed to log in' });
+  }
+});
+
+app.post('/fee-rules', requireAuth, async (req: Request, res: Response) => {
     console.log('Request received:', req.body);
     const { feeComponentId, grade, academicYear, amount, ratePerKm } = req.body;
     try {
@@ -26,7 +84,7 @@ app.post('/fee-rules', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/students', async (req: Request, res: Response) => {
+app.post('/students', requireAuth, async (req: Request, res: Response) => {
     const { name, grade } = req.body;
     try {
         const student = await prisma.student.create({
@@ -38,7 +96,7 @@ app.post('/students', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/fee-assignments', async (req: Request, res: Response) => {
+app.post('/fee-assignments', requireAuth, async (req: Request, res: Response) => {
     const { studentId, feeRuleId, academicYear } = req.body;
     try {
         const student = await prisma.student.findUnique({ where: { id: studentId } });
@@ -72,7 +130,7 @@ app.post('/fee-assignments', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/payments', async (req: Request, res: Response) => {
+app.post('/payments', requireAuth, async (req: Request, res: Response) => {
   const { feeAssignmentId, installmentId, amount } = req.body;
   try {
     if (installmentId) {
@@ -163,7 +221,7 @@ app.get('/fee-assignments/:id/balance', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/installments', async (req: Request, res: Response) => {
+app.post('/installments', requireAuth, async (req: Request, res: Response) => {
     const { feeAssignmentId, installmentNumber, amount, dueDate } = req.body;
     try {
         const installment = await prisma.installment.create({
@@ -204,7 +262,7 @@ app.get('/fee-assignments/:id/installments', async (req: Request, res: Response)
     }
 });
 
-app.patch('/fee-rules/:id', async (req: Request, res: Response) => {
+app.patch('/fee-rules/:id', requireAuth, async (req: Request, res: Response) => {
     const { lateFeePercent } = req.body;
     try {
         const rule = await prisma.feeRule.update({
@@ -218,7 +276,7 @@ app.patch('/fee-rules/:id', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/installments/:id/charge-late-fee', async (req: Request, res: Response) => {
+app.post('/installments/:id/charge-late-fee', requireAuth, async (req: Request, res: Response) => {
     try {
         const installment = await prisma.installment.findUnique({
             where: { id: req.params.id },
@@ -250,7 +308,7 @@ app.post('/installments/:id/charge-late-fee', async (req: Request, res: Response
     }
 });
 
-app.post('/transactions/adjustment', async (req: Request, res: Response) => {
+app.post('/transactions/adjustment', requireAuth, async (req: Request, res: Response) => {
     const { feeAssignmentId, installmentId, type, amount, reason, approvedBy } = req.body;
     
     if (type !== 'REFUND' && type !== 'WAIVER') {
@@ -268,7 +326,7 @@ app.post('/transactions/adjustment', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/students', async (req: Request, res: Response) => {
+app.post('/students',requireAuth, async (req: Request, res: Response) => {
   const { name, grade, section } = req.body;
   try {
     const student = await prisma.student.create({
@@ -281,7 +339,7 @@ app.post('/students', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/fee-components', async (req: Request, res: Response) => {
+app.post('/fee-components', requireAuth, async (req: Request, res: Response) => {
   const { name, calculationType } = req.body;
   try {
     const component = await prisma.feeComponent.create({
@@ -294,7 +352,7 @@ app.post('/fee-components', async (req: Request, res: Response) => {
   }
 });
 
-app.patch('/students/:id', async (req: Request, res: Response) => {
+app.patch('/students/:id', requireAuth, async (req: Request, res: Response) => {
   const { section, distanceKm, isBoarder } = req.body;
   try {
     const student = await prisma.student.update({
