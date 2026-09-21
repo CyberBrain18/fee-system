@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "FeeRule" ADD COLUMN     "lateFeePercent" DOUBLE PRECISION NOT NULL DEFAULT 0;

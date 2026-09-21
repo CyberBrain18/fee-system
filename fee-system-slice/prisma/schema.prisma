@@ -1,0 +1,91 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "./generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Student {
+  id          String           @id @default(uuid())
+  name        String
+  grade       String
+  section     String           @default("A")
+  distanceKm  Float?
+  isBoarder   Boolean          @default(false)
+  assignments FeeAssignment[]
+}
+
+model FeeRule {
+  id             String           @id @default(uuid())
+  feeComponentId String
+  feeComponent   FeeComponent     @relation(fields: [feeComponentId], references: [id])
+  grade          String?
+  academicYear   String
+  amount         Float
+  ratePerKm      Float?
+  lateFeePercent Float            @default(0)
+  assignments    FeeAssignment[]
+}
+
+model Installment {
+  id                String        @id @default(uuid())
+  feeAssignmentId   String
+  feeAssignment     FeeAssignment @relation(fields: [feeAssignmentId], references: [id])
+  installmentNumber Int
+  amount            Float
+  dueDate           DateTime
+  transactions      Transaction[]
+}
+
+model FeeAssignment {
+  id           String        @id @default(uuid())
+  studentId    String
+  student      Student       @relation(fields: [studentId], references: [id])
+  feeRuleId    String
+  feeRule      FeeRule       @relation(fields: [feeRuleId], references: [id])
+  academicYear String
+  amount       Float
+  installments Installment[]
+  transactions Transaction[]
+}
+
+model Transaction {
+  id              String        @id @default(uuid())
+  feeAssignmentId String
+  feeAssignment   FeeAssignment @relation(fields: [feeAssignmentId], references: [id])
+  installmentId   String?
+  installment     Installment?  @relation(fields: [installmentId], references: [id])
+  type            TransactionType @default(PAYMENT)
+  amount          Float
+  receiptNumber   String?         @unique
+  reason          String?
+  approvedBy      String?
+  date            DateTime      @default(now())
+}
+
+enum TransactionType {
+  PAYMENT
+  LATE_FEE
+  REFUND
+  WAIVER
+}
+
+enum FeeCalculationType {
+  GRADE_BASED
+  DISTANCE_BASED
+  FLAT
+}
+
+model FeeComponent {
+  id              String             @id @default(uuid())
+  name            String
+  calculationType FeeCalculationType
+  feeRules        FeeRule[]
+}
+
+
+
