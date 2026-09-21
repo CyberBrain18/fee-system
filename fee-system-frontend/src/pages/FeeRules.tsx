@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getFeeRules } from '../lib/api';
+import { getFeeRules, getFeeComponents } from '../lib/api';
 import Sidebar from '../components/Sidebar';
+
 
 function FeeRules() {
   const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [components, setComponents] = useState<any[]>([]);
 
   useEffect(() => {
     getFeeRules()
       .then(setRules)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+
+    getFeeComponents()
+      .then(setComponents)
+      .catch(() => {});
   }, []);
+
+  
 
   if (loading) return <div className="p-8 font-sans">Loading...</div>;
   if (error) return <div className="p-8 text-red-600 font-sans">Error: {error}</div>;
@@ -43,6 +51,20 @@ function FeeRules() {
                 + New Fee Rule
               </Link>
             </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-black/10 rounded-xl p-5">
+          <div className="font-display font-semibold text-sm mb-3">Fee Components</div>
+          <div className="flex flex-wrap gap-2">
+            {components.map((c) => (
+              <span
+                key={c.id}
+                className="px-3 py-1.5 rounded-full bg-black/5 text-[13px] font-medium"
+              >
+                {c.name} — {c.calculationType.replace('_', ' ').toLowerCase()}
+              </span>
+            ))}
           </div>
         </div>
 
