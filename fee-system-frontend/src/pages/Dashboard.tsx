@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getStudents } from './api';
+import { getStudents } from '../lib/api';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { clearToken } from './auth';
+import Sidebar from '../components/Sidebar';
+import Avatar from '../components/Avatar';
+import StatusBadge from '../components/StatusBadge';
 
 function computeAssignmentTotals(assignment: any) {
 
@@ -19,25 +20,10 @@ function computeAssignmentTotals(assignment: any) {
   return { paid, balance };
 }
 
-function statusFor(balance: number) {
-  if (balance <= 0) return { label: 'Paid', bg: 'bg-[#558A42]/10', text: 'text-[#558A42]' };
-  return { label: 'Due', bg: 'bg-[#B3261E]/10', text: 'text-[#B3261E]' };
-}
-
-function initials(name: string) {
-  return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
-}
-
 function Dashboard() {
-  const navigate = useNavigate();
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  function handleLogout() {
-    clearToken();
-    navigate('/login');
-  }
-
   useEffect(() => {
     getStudents()
       .then(setStudents)
@@ -65,25 +51,7 @@ function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-[#FAF9F5] text-[#141413] font-sans">
-      <aside className="w-60 shrink-0 bg-white border-r border-black/10 p-6 flex flex-col gap-8">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2A78D6]" />
-          <div className="font-display font-semibold text-[15px]">Meridian School</div>
-        </div>
-        <nav className="flex flex-col gap-1">
-          <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Dashboard</div>
-          <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
-          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
-          <button
-          type="button"
-          onClick={handleLogout}
-          className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
-        >
-          Log Out
-        </button>
-        
-        </nav>
-      </aside>
+      <Sidebar active="dashboard" />
 
       <main className="flex-1 p-10 flex flex-col gap-7">
         <div className="flex justify-between items-center">
@@ -137,22 +105,17 @@ function Dashboard() {
                         to={`/students/${student.id}`}
                         className="flex items-center gap-4 py-3 border-t border-black/5 hover:bg-black/[0.015] no-underline"
                       >
-                        <div className="w-8 h-8 rounded-full bg-[#2A78D6] text-white flex items-center justify-center font-display font-semibold text-xs shrink-0">
-                          {initials(student.name)}
-                        </div>
+                        <Avatar name={student.name} className="w-8 h-8 text-xs shrink-0" />
                         <div className="flex-1">
                           <div className="font-semibold text-sm text-[#141413]">{student.name}</div>
                         </div>
                         <div className="flex gap-4 items-center">
                           {student.assignments.map((assignment: any) => {
                             const { balance } = computeAssignmentTotals(assignment);
-                            const status = statusFor(balance);
-                            return (
+                                                        return (
                               <div key={assignment.id} className="flex items-center gap-2 text-sm">
                                 <span className="text-[#73726C]">{assignment.feeRule.feeComponent.name}</span>
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.text}`}>
-                                  {status.label}
-                                </span>
+                                <StatusBadge paid={balance <= 0} />
                               </div>
                             );
                           })}

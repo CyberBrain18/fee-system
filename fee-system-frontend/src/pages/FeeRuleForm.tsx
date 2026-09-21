@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFeeComponents, createFeeRule } from './api';
+import { getFeeComponents, createFeeRule } from '../lib/api';
 
 function FeeRuleForm() {
   const navigate = useNavigate();

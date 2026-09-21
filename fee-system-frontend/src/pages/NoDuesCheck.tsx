@@ -1,23 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getStudents, getNoDuesStatus } from './api';
-import { clearToken } from './auth';
-
-function initials(name: string) {
-  return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
-}
+import { getStudents, getNoDuesStatus } from '../lib/api';
+import Sidebar from '../components/Sidebar';
+import Avatar from '../components/Avatar';
 
 function NoDuesCheck() {
-  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [students, setStudents] = useState<any[]>([]);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-
-  function handleLogout() {
-    clearToken();
-    navigate('/login');
-  }
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -41,24 +31,7 @@ function NoDuesCheck() {
 
   return (
     <div className="flex min-h-screen bg-[#FAF9F5] text-[#141413] font-sans">
-      <aside className="w-60 shrink-0 bg-white border-r border-black/10 p-6 flex flex-col gap-8">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2A78D6]" />
-          <div className="font-display font-semibold text-[15px]">Meridian School</div>
-        </div>
-        <nav className="flex flex-col gap-1 flex-1">
-          <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Dashboard</Link>
-          <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
-          <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">No-Dues Check</div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
-          >
-            Log Out
-          </button>
-        </nav>
-      </aside>
+      <Sidebar active="no-dues" fillHeight />
 
       <main className="flex-1 p-10 flex flex-col gap-6">
         <div>
@@ -92,9 +65,7 @@ function NoDuesCheck() {
           <div className="bg-white border border-black/10 rounded-xl p-6">
             <div className="flex justify-between items-start mb-4">
               <div className="flex gap-3.5 items-center">
-                <div className="w-11 h-11 rounded-full bg-[#2A78D6] text-white flex items-center justify-center font-display font-semibold">
-                  {initials(result.studentName)}
-                </div>
+                <Avatar name={result.studentName} className="w-11 h-11" />
                 <div>
                   <div className="font-semibold text-[17px]">{result.studentName}</div>
                   <div className="text-[13px] text-[#73726C]">Grade {result.grade}{result.section}</div>

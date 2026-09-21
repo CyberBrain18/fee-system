@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { recordPayment } from './api';
+import { recordPayment } from '../lib/api';
 
 
 function RecordPayment() {

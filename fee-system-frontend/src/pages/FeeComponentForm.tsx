@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createFeeComponent } from './api';
+import { createFeeComponent } from '../lib/api';
 
 const CALC_TYPES = [
   { value: 'GRADE_BASED', label: 'Grade-based', desc: "Same amount for every student in a grade — e.g. Tuition, Exam" },

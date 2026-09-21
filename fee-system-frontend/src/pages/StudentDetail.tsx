@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getStudent } from './api';
-import { useNavigate } from 'react-router-dom';
-import { clearToken } from './auth';
+import { getStudent } from '../lib/api';
+import Sidebar from '../components/Sidebar';
+import Avatar from '../components/Avatar';
+import StatusBadge from '../components/StatusBadge';
 
 function computeInstallmentTotals(installment: any) {
 
@@ -35,21 +36,11 @@ function computeAssignmentTotals(assignment: any) {
   return { paid, balance };
 }
 
-function initials(name: string) {
-  return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
-}
-
 function StudentDetail() {
   const { id } = useParams();
   const [student, setStudent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    clearToken();
-    navigate('/login');
-  }
   useEffect(() => {
     if (!id) return;
     getStudent(id)
@@ -68,31 +59,12 @@ function StudentDetail() {
 
   return (
     <div className="flex min-h-screen bg-[#FAF9F5] text-[#141413] font-sans">
-      <aside className="w-60 shrink-0 bg-white border-r border-black/10 p-6 flex flex-col gap-8">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2A78D6]" />
-          <div className="font-display font-semibold text-[15px]">Meridian School</div>
-        </div>
-        <nav className="flex flex-col gap-1">
-          <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6] no-underline">Dashboard</Link>
-          <Link to="/fee-rules" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Fee Rules</Link>
-          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
-          <button
-          type="button"
-          onClick={handleLogout}
-          className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
-        >
-          Log Out
-        </button>
-        </nav>
-      </aside>
+      <Sidebar active="dashboard" activeAsLink />
 
       <main className="flex-1 p-10 flex flex-col gap-6">
         <Link to="/" className="text-sm font-medium text-[#73726C] no-underline">← Back to students</Link>
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-full bg-[#2A78D6] text-white flex items-center justify-center font-display font-semibold text-xl">
-          {initials(student.name)}
-        </div>
+        <Avatar name={student.name} className="w-14 h-14 text-xl" />
         <div>
           <h1 className="font-display font-semibold text-2xl m-0">{student.name}</h1>
           <div className="text-[13px] text-[#73726C] flex gap-2 items-center mt-1">
@@ -152,11 +124,7 @@ function StudentDetail() {
                           </div>
                         </div>
                         <div className="flex gap-2 items-center">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            inst.balance <= 0 ? 'bg-[#558A42]/10 text-[#558A42]' : 'bg-[#B3261E]/10 text-[#B3261E]'
-                          }`}>
-                            {inst.balance <= 0 ? 'Paid' : 'Due'}
-                          </span>
+                          <StatusBadge paid={inst.balance <= 0} />
                           {inst.lateFee > 0 && (
                             <span className="text-xs text-[#B3261E]">Late fee +₹{inst.lateFee.toLocaleString()}</span>
                           )}

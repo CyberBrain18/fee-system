@@ -1,19 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getFeeRules } from './api';
-import { useNavigate } from 'react-router-dom';
-import { clearToken } from './auth';
+import { getFeeRules } from '../lib/api';
+import Sidebar from '../components/Sidebar';
 
 function FeeRules() {
   const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    clearToken();
-    navigate('/login');
-  }
 
   useEffect(() => {
     getFeeRules()
@@ -27,24 +20,7 @@ function FeeRules() {
 
   return (
     <div className="flex min-h-screen bg-[#FAF9F5] text-[#141413] font-sans">
-      <aside className="w-60 shrink-0 bg-white border-r border-black/10 p-6 flex flex-col gap-8">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2A78D6]" />
-          <div className="font-display font-semibold text-[15px]">Meridian School</div>
-        </div>
-        <nav className="flex flex-col gap-1">
-          <Link to="/" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">Dashboard</Link>
-          <div className="px-3 py-2.5 rounded-lg text-sm font-medium bg-[#2A78D6]/10 text-[#2A78D6]">Fee Rules</div>
-          <Link to="/no-dues" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[#5E5D59] no-underline">No-Dues Check</Link>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="mt-auto px-3 py-2.5 rounded-lg text-sm font-medium text-[#B3261E] text-left bg-transparent border-none cursor-pointer"
-          >
-            Log Out
-          </button>
-        </nav>
-      </aside>
+      <Sidebar active="fee-rules" />
 
       <main className="flex-1 p-10 flex flex-col gap-6">
         <div>
